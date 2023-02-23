@@ -30,15 +30,17 @@ type RunItem struct {
 }
 
 type Build struct {
-	GPU                bool      `json:"gpu,omitempty" yaml:"gpu"`
-	PythonVersion      string    `json:"python_version,omitempty" yaml:"python_version"`
-	PythonRequirements string    `json:"python_requirements,omitempty" yaml:"python_requirements"`
-	PythonPackages     []string  `json:"python_packages,omitempty" yaml:"python_packages"` // Deprecated, but included for backwards compatibility
-	Run                []RunItem `json:"run,omitempty" yaml:"run"`
-	SystemPackages     []string  `json:"system_packages,omitempty" yaml:"system_packages"`
-	PreInstall         []string  `json:"pre_install,omitempty" yaml:"pre_install"` // Deprecated, but included for backwards compatibility
-	CUDA               string    `json:"cuda,omitempty" yaml:"cuda"`
-	CuDNN              string    `json:"cudnn,omitempty" yaml:"cudnn"`
+	GPU                bool     `json:"gpu,omitempty" yaml:"gpu"`
+	PythonVersion      string   `json:"python_version,omitempty" yaml:"python_version"`
+	PythonRequirements string   `json:"python_requirements,omitempty" yaml:"python_requirements"`
+	PythonPackages     []string `json:"python_packages,omitempty" yaml:"python_packages"` // Deprecated, but included for backwards compatibility
+	Run                []string `json:"run,omitempty" yaml:"run"`
+	SystemPackages     []string `json:"system_packages,omitempty" yaml:"system_packages"`
+	PreInstall         []string `json:"pre_install,omitempty" yaml:"pre_install"` // Deprecated, but included for backwards compatibility
+	Cog                bool 	`json:"cog,omitempty" yaml:"cog"`
+	Cmd                string	`json:"cmd,omitempty" yaml:"cmd"`
+	CUDA               string   `json:"cuda,omitempty" yaml:"cuda"`
+	CuDNN              string   `json:"cudnn,omitempty" yaml:"cudnn"`
 
 	pythonRequirementsContent []string
 }
@@ -60,6 +62,8 @@ func DefaultConfig() *Config {
 		Build: &Build{
 			GPU:           false,
 			PythonVersion: "3.8",
+			Cog:            true,
+			Cmd:            `CMD ["python", "-m", "cog.server.http"]`,
 		},
 	}
 }
