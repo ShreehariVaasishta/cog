@@ -34,7 +34,7 @@ type Build struct {
 	PythonVersion      string   `json:"python_version,omitempty" yaml:"python_version"`
 	PythonRequirements string   `json:"python_requirements,omitempty" yaml:"python_requirements"`
 	PythonPackages     []string `json:"python_packages,omitempty" yaml:"python_packages"` // Deprecated, but included for backwards compatibility
-	Run                []string `json:"run,omitempty" yaml:"run"`
+	Run                []RunItem `json:"run,omitempty" yaml:"run"`
 	SystemPackages     []string `json:"system_packages,omitempty" yaml:"system_packages"`
 	PreInstall         []string `json:"pre_install,omitempty" yaml:"pre_install"` // Deprecated, but included for backwards compatibility
 	Cog                bool 	`json:"cog,omitempty" yaml:"cog"`

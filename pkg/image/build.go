@@ -1,7 +1,7 @@
 package image
 
 import (
-	// "bytes"
+	"bytes"
 	// "encoding/json"
 	"fmt"
 	"os"
