@@ -30,17 +30,17 @@ type RunItem struct {
 }
 
 type Build struct {
-	GPU                bool     `json:"gpu,omitempty" yaml:"gpu"`
-	PythonVersion      string   `json:"python_version,omitempty" yaml:"python_version"`
-	PythonRequirements string   `json:"python_requirements,omitempty" yaml:"python_requirements"`
-	PythonPackages     []string `json:"python_packages,omitempty" yaml:"python_packages"` // Deprecated, but included for backwards compatibility
+	GPU                bool      `json:"gpu,omitempty" yaml:"gpu"`
+	PythonVersion      string    `json:"python_version,omitempty" yaml:"python_version"`
+	PythonRequirements string    `json:"python_requirements,omitempty" yaml:"python_requirements"`
+	PythonPackages     []string  `json:"python_packages,omitempty" yaml:"python_packages"` // Deprecated, but included for backwards compatibility
 	Run                []RunItem `json:"run,omitempty" yaml:"run"`
-	SystemPackages     []string `json:"system_packages,omitempty" yaml:"system_packages"`
-	PreInstall         []string `json:"pre_install,omitempty" yaml:"pre_install"` // Deprecated, but included for backwards compatibility
-	Cog                bool 	`json:"cog,omitempty" yaml:"cog"`
-	Cmd                string	`json:"cmd,omitempty" yaml:"cmd"`
-	CUDA               string   `json:"cuda,omitempty" yaml:"cuda"`
-	CuDNN              string   `json:"cudnn,omitempty" yaml:"cudnn"`
+	SystemPackages     []string  `json:"system_packages,omitempty" yaml:"system_packages"`
+	PreInstall         []string  `json:"pre_install,omitempty" yaml:"pre_install"` // Deprecated, but included for backwards compatibility
+	Cog                bool      `json:"cog,omitempty" yaml:"cog"`
+	Cmd                string    `json:"cmd,omitempty" yaml:"cmd"`
+	CUDA               string    `json:"cuda,omitempty" yaml:"cuda"`
+	CuDNN              string    `json:"cudnn,omitempty" yaml:"cudnn"`
 
 	pythonRequirementsContent []string
 }
@@ -62,8 +62,8 @@ func DefaultConfig() *Config {
 		Build: &Build{
 			GPU:           false,
 			PythonVersion: "3.8",
-			Cog:            true,
-			Cmd:            `CMD ["python", "-m", "cog.server.http"]`,
+			Cog:           true,
+			Cmd:           `CMD ["python", "-m", "cog.server.http"]`,
 		},
 	}
 }
@@ -186,15 +186,22 @@ func (c *Config) cudaFromTF() (tfVersion string, tfCUDA string, tfCuDNN string, 
 }
 
 func (c *Config) pythonPackageVersion(name string) (version string, ok bool) {
+	console.Debugf("Started searching for package name %s in requirements \n", name)
+
 	for _, pkg := range c.Build.pythonRequirementsContent {
 		pkgName, version, err := splitPinnedPythonRequirement(pkg)
 		if err != nil {
-			return "", false
+			continue
 		}
+
+		console.Debugf("Package name and version in requirements %s %s \n", pkgName, version)
+
 		if pkgName == name {
+			console.Debugf("Found packages in the requirements for the following name %s with version %s \n", name, version)
 			return version, true
 		}
 	}
+	console.Debugf("Did not find any packages for the following name in requirements %s \n", name)
 	return "", false
 }
 
@@ -255,7 +262,7 @@ func (c *Config) PythonRequirementsForArch(goos string, goarch string) (string, 
 	for _, pkg := range c.Build.pythonRequirementsContent {
 		archPkg, findLinks, extraIndexURL, err := c.pythonPackageForArch(pkg, goos, goarch)
 		if err != nil {
-			return "", err
+			continue
 		}
 		packages = append(packages, archPkg)
 		if findLinks != "" {
@@ -343,10 +350,13 @@ Compatible CuDNN versions are: %s`, c.Build.CUDA, c.Build.CuDNN, strings.Join(co
 	if err != nil {
 		return err
 	}
+	fmt.Printf("Identified torch version %s and torch cuda %s \n", torchVersion, torchCUDAs)
 	tfVersion, tfCUDA, tfCuDNN, err := c.cudaFromTF()
 	if err != nil {
 		return err
 	}
+	fmt.Printf("Identified tf version %s and tf cuda %s \n", tfVersion, tfCUDA)
+
 	// The pre-compiled TensorFlow binaries requires specific CUDA/CuDNN versions to be
 	// installed, but Torch bundles their own CUDA/CuDNN libraries.
 
