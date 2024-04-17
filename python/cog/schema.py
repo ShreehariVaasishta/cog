@@ -29,7 +29,7 @@ class WebhookEvent(str, Enum):
 
 
 class PredictionBaseModel(pydantic.BaseModel, extra=pydantic.Extra.allow):
-    input: t.Dict[str, t.Any]
+    instances: t.Dict[str, t.Any]
 
 
 class PredictionRequest(PredictionBaseModel):
